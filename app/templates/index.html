@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-md p-6 mb-8 animate-fade-in">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Load Google Sheet</h2>
+        <form method="POST" action="{{ url_for('main.index') }}" class="flex flex-col sm:flex-row gap-3">
+            <input type="text" name="sheet_url" placeholder="Enter Google Sheet URL (e.g., https://docs.google.com/spreadsheets/d/...)" value="{{ sheet_url or '' }}"
+                   class="flex-grow border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 transition placeholder-gray-400 hover:border-teal-400"
+                   required>
+            <button type="submit" onclick="showLoadingSpinner()"
+                    class="bg-blue-900 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-blue-800 focus:ring-2 focus:ring-teal-400 transition duration-300 shadow-sm">
+                Load Sheet
+            </button>
+        </form>
+    </div>
+
+    {% if sheet_titles %}
+        <div class="bg-white rounded-xl shadow-md p-6 mb-8 animate-fade-in">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Select a Sheet</h3>
+            <div class="flex flex-wrap gap-3">
+                {% for sheet in sheet_titles %}
+                    <a href="{{ url_for('main.get_sheet_data', sheet_name=sheet | urlencode) }}"
+                       class="px-4 py-2 rounded-lg text-sm font-medium transition duration-300 shadow-sm
+                              {% if sheet == active_sheet %} bg-teal-400 text-white {% else %} bg-blue-100 text-blue-900 hover:bg-blue-200 focus:ring-2 focus:ring-teal-400 {% endif %}"
+                       onclick="showLoadingSpinner()">
+                        {{ sheet }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if headers and data %}
+        <div class="bg-white rounded-xl shadow-md p-6 overflow-x-auto animate-fade-in">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Data from {{ active_sheet }}</h2>
+            <div class="relative">
+                <table class="min-w-full table-auto border-collapse border border-gray-200">
+                    <thead class="bg-gray-50 sticky top-16 z-10 shadow-sm">
+                        <tr class="text-gray-700">
+                            {% for header in headers %}
+                                <th class="border border-gray-200 px-3 py-2 text-left text-sm font-semibold">
+                                    {{ header }}
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in data %}
+                            <tr class="{% if loop.index % 2 == 0 %} bg-gray-50 {% else %} bg-white {% endif %} hover:bg-blue-50 transition">
+                                {% for header in headers %}
+                                    <td class="border border-gray-200 px-3 py-2 text-sm truncate max-w-xs"
+                                        title="{{ row.get(header, '') }}">
+                                        {{ row.get(header, '') | truncate(50, true, '...') }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

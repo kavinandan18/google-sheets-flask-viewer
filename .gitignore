@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.env
+*.venv
+.env
+env/
+venv/
+sheetenv/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# IDEs
+.vscode/
+.idea/
+
+# Google credentials
+credentials.json
+
+# Compiled HTML/JS
+*.map
+
+# Flask cache
+instance/
+flask_session
